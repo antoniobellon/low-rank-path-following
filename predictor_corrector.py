@@ -106,7 +106,7 @@ class _PredictorCorrector:
             self._LR_runtime += run_time_LR
             
             self._candidate_Y += self._Y
-            np.copyto(self._candidate_lam, self._linear_KKT_sol[n*rank:n*rank+m])
+            np.copyto(self._candidate_lam, self._linear_KKT_sol[n*rank:n*rank+m]) 
              
             res = residual.resid(n=n, m=m, rank=rank, A=A(next_time), b=b(next_time),  C=C(next_time), 
                                             Y=self._candidate_Y, lam=self._candidate_lam, print_data=print_data)

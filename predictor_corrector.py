@@ -14,13 +14,12 @@ class _PredictorCorrector:
     def __init__(self, n: int, m: int, rank: int, params: dict, ini_stepsize: float, res_tol: float):
         """ Constructor pre-allocates and pre-computes persistent
             data structures. """ 
-
+        # Storing problem dimensions
         self._n = n
         self._m = m
         self._rank = rank
 
         # Create all necessary modules and pre-allocate the workspace 
-         
         self._LinearizedKKTsystem = lk._LinearizedKKTsystem(n=n, m=m, rank=rank)
         self._Y = np.zeros((n, rank)) 
         self._lam = np.zeros((m, ))   
@@ -29,7 +28,7 @@ class _PredictorCorrector:
         self._linear_KKT_sol = np.zeros((int(n*rank+m+0.5*rank*(rank-1)),))
         self._X = np.zeros((n, n))
 
-        # Parameters 
+        # Storing algorithm parameters 
         self._gamma1 = float(params["problem"]["gamma1"])
         self._gamma2 = float(params["problem"]["gamma2"])
         self._final_time = float(params["problem"]["final_time"])

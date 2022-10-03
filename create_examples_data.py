@@ -109,7 +109,7 @@ class _ProblemCreator:
         J = NZ[1]
         nr_NZ = len(I)
         V = np.random.rand(nr_NZ,) 
-        rand_C_pert = sc.sparse.coo_matrix((V,(I,J)),shape=(n,n)).toarray()
+        rand_C_pert = sc.sparse.coo_matrix((V,(I,J)),shape=(n,n)).toarray()*10
         
         C_init = np.abs(rand_C_init - rand_C_init.T) 
         C_pert = np.abs(rand_C_pert - rand_C_pert.T)  
@@ -127,6 +127,7 @@ class _ProblemCreator:
 
         def C(time: np.float): 
             return C_init+time*C_pert 
+       
 
         return n, n, A, b, C
 

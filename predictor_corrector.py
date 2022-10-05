@@ -40,8 +40,7 @@ class _PredictorCorrector:
         self._res_tol = res_tol
        
         # Initializing variables for storing solution, residuals and runtime
-        self._primal_solutions_list = []
-        self._dual_solutions_list = []
+        self._primal_solutions_list = [] 
         self._LR_residuals = []
         self._LR_runtime = 0.0
        
@@ -51,7 +50,7 @@ class _PredictorCorrector:
         """ The actual algorithm is executed. """ 
  
         iteration = 0 
-       
+         
         # Get copies of all problem parameters  
         dt = self._ini_stepsize   
         curr_time = self._initial_time
@@ -62,9 +61,12 @@ class _PredictorCorrector:
         np.copyto(self._Y, Y_0)
         np.copyto(self._X,np.matmul(Y_0,Y_0.T))
         np.copyto(self._lam, lam_0)  
+        
+        # Store initial solution in the solutions array
+        self._primal_solutions_list.append(np.array(self._X))
 
         while curr_time < self._final_time:   
-
+ 
             # Compute linearized KKT system
             H = self._LinearizedKKTsystem.computeMatrix(A= A(next_time), C=C(next_time), Y=self._Y, lam=self._lam) 
             k = self._LinearizedKKTsystem.computeRhs(A=A(next_time), b=b(next_time), C=C(next_time), Y=self._Y, X=self._X)   
@@ -85,9 +87,10 @@ class _PredictorCorrector:
             self._LR_residuals.append(max(res))
 
             # Possibly print some data 
-            if iteration%10==0: print("\nITERATION", iteration) 
+            if not PRINT_DATA and iteration%10==0: print("\nITERATION", iteration) 
 
             if PRINT_DATA: 
+                print("\nITERATION", iteration) 
                 print("running time t", time.time() - start_time) 
                 print("TIME", curr_time) 
                 print("TARGET TIME", next_time) 
@@ -98,7 +101,7 @@ class _PredictorCorrector:
             
             # According to STEPSIZE_TUNING:
             # either reduce dt by a factor_gamma1 if the residual threshold is violated ...
-            if STEPSIZE_TUNING and res>self._res_tol: 
+            if STEPSIZE_TUNING and max(res)>self._res_tol: 
 
                     dt *= self._gamma1
                     next_time = curr_time + dt  
@@ -108,14 +111,14 @@ class _PredictorCorrector:
             # ... or keep a constant stepsize
             else:
 
-                # Update the solution and the time
+                # Update (and store) the solution and the time
                 np.copyto(self._Y, self._candidate_Y)
                 np.copyto(self._lam, self._candidate_lam) 
                 np.copyto(self._X,np.matmul(self._Y,self._Y.T))  
- 
+                self._primal_solutions_list.append(np.array(self._X))
                 curr_time += dt
                 iteration += 1 
-
+                
                 # STEPSIZE_TUNING also indicates whether to optimistically tune the stepsize by a factor_gamma2 or not 
                 if STEPSIZE_TUNING:
                     dt = min(self._final_time  - curr_time, self._gamma2 * dt)

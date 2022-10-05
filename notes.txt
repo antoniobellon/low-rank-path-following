@@ -1,0 +1,9 @@
+THIS IS HOW TO CREATE equation (C-lambdaA)Y in a proper matrix form
+for r in range(3):
+...     a=np.block([[a,np.zeros((4*(r+1),4))],[np.zeros((4,4*(r+1))),k]])
+
+NB We use an ordering on the nXrank entries of Y, that is we vectorize wrt columns!
+
+NB I am implementing the system with the fact 2 before H and G
+
+NB in the implementation I use the minus "-" sign for the multipliers in the lagrangian

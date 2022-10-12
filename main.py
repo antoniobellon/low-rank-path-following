@@ -1,7 +1,7 @@
 import predictor_corrector as pc 
 import create_examples_data  as ex 
 import mosek_ipm_solver as ip 
-import ipm_tracker as it
+import experiments.ipm_tracker as it
 import parameters as par 
 import numpy as np   
 

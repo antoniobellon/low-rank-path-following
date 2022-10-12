@@ -19,7 +19,7 @@ _USER_PARAMETERS = {
         "res_tol":  1e-4, 
 
         # Initial step size (delta t) in the inner loop:
-        "ini_stepsize": 0.1,
+        "ini_stepsize": 0.01,
 
         # Initial time
         "initial_time": 0,

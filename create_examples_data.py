@@ -59,35 +59,6 @@ class _ProblemCreator:
 
         return n, m, A, b, C
 
-    def _create_bigeasy(self, n: int):
-        
-        A_init = [] 
-         
-        constraint_i = np.zeros((n,n))
-        constraint_i[0,0] = 1  
-        A_init.append(constraint_i)  
-
-        A_init = np.array(A_init) 
-        np.copyto(self._A_init, A_init) 
-        
-        b_pert = np.ones(1)
-        np.copyto(self._b_pert, b_pert) 
-
-        C_init = np.eye(n)
-        
-        np.copyto(self._C_init, C_init)  
-
-        def A(time: np.float): 
-            return A_init
-        
-        def b(time: np.float):
-            return time*b_pert+1
-
-        def C(time: np.float): 
-            return C_init 
-
-        return n, 1, A, b, C
-
     def _create_MaxCut(self, n: int):
         
         A_init = [] 

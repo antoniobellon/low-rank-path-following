@@ -6,7 +6,7 @@ import create_examples_data  as ex
 import predictor_corrector as pc  
 import ipm_tracker as it
 import parameters as par  
-import sdp_solver as ss 
+import mosek_ipm_solver as ss 
 
 params = par.getParameters(print_par=True) 
 

@@ -112,9 +112,7 @@ class _ProblemCreator:
         rand_C_pert = sc.sparse.coo_matrix((V,(I,J)),shape=(n,n)).toarray()*10
         
         C_init = np.abs(rand_C_init - rand_C_init.T) 
-        C_pert = np.abs(rand_C_pert - rand_C_pert.T)  
-        # print(C_init)
-        # print(C_pert)
+        C_pert = np.abs(rand_C_pert - rand_C_pert.T)   
 
         np.copyto(self._C_init, C_init) 
         np.copyto(self._C_pert, C_pert) 

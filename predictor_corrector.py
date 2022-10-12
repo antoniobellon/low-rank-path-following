@@ -1,9 +1,8 @@
 import numpy as np 
 import scipy 
 import time  
-import warnings
-import sdp_solver as ss
-import residual as residual
+import warnings 
+import residual
 import linearized_kkt as lk 
       
 warnings.filterwarnings("ignore")

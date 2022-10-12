@@ -13,10 +13,6 @@ initial_time = float(params["problem"]["initial_time"])
 # problem = ex._ProblemCreator(n,m)
 # n, m, A, b, C = problem._create_random_problem(n,m) 
 
-# n = int(input("Enter n:"))
-# problem = ex._ProblemCreator(n,n)
-# n, m, A, b, C = problem._create_bigeasy(n) 
-
 n = int(input("Enter n:"))
 problem = ex._ProblemCreator(n,n)
 n, m, A, b, C = problem._create_MaxCut(n)  

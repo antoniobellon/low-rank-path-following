@@ -1,25 +1,17 @@
 import matplotlib.pyplot as plt
-import numpy as np 
 import predictor_corrector as pc  
 import mosek_ipm_solver as ip 
 import experiments.ipm_tracker as it 
 import parameters as par 
 import quantum_utilities as qu
 import mmw_tomography as mt
-from scipy.linalg import sqrtm
-
-from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from qiskit import BasicAer
-from qiskit.compiler import transpile
-from qiskit.quantum_info.operators import Operator, Pauli
-from qiskit.quantum_info import state_fidelity, random_density_matrix, DensityMatrix
-from qiskit_experiments.library.tomography import basis
-from qiskit.extensions import RXGate, XGate, CXGate
-from scipy.linalg import expm
  
-N = 2                                     # number of qubits 
+from qiskit.quantum_info import state_fidelity, random_density_matrix
+ 
+ 
+N = 1                                     # number of qubits 
 M = 4**N                                  # number of measurements 
-T = 300                                   # number of samples for each measurement 
+T = 100                                   # number of samples for each measurement 
 
 ro = random_density_matrix(2**N)
 
@@ -65,7 +57,7 @@ plt.title("Fidelity of state estimation using different methods\n " + r"$F = \le
 plt.xlabel("Measurement step")
 plt.ylabel(r"Fidelity, $F$")
 plt.axis([0, T, 0, 1.01])
-plt.plot([sdp_fidelity_exact for i in range(T)],'r') 
+plt.plot([sdp_fidelity_exact for i in range(T+1)],'r') 
 plt.plot(sdp_fidelity_approx,'g')
 # plt.plot(predcorr.times,path_following_fidelity,'b')
 plt.plot(mmw_fidelity,'y')

@@ -6,22 +6,21 @@ import experiments.ipm_tracker as it
 import parameters as par 
 import quantum_utilities as qu
 import mmw_tomography as mt
-from scipy.linalg import sqrtm
+
 import plotly.graph_objects as go 
 
-from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from qiskit import BasicAer
+from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister, BasicAer
 from qiskit.compiler import transpile
 from qiskit.quantum_info.operators import Operator, Pauli
 from qiskit.quantum_info import state_fidelity, random_density_matrix, DensityMatrix
 from qiskit_experiments.library.tomography import basis
 from qiskit.extensions import RXGate, XGate, CXGate
-from scipy.linalg import expm
+from scipy.linalg import expm, sqrtm 
  
-N = 2                                     # number of qubits 
+N = 1                                     # number of qubits 
 M = 4**N                                  # number of measurements 
-T = 209                                   # number of samples for each measurement 
-SAMPLE_SIZE = 20
+T = 509                                   # number of samples for each measurement 
+SAMPLE_SIZE = 100
 
 sdp_fidelity_list = np.ndarray((SAMPLE_SIZE,T+1), dtype=float)
 mmw_fidelity_list = np.ndarray((SAMPLE_SIZE,T+1), dtype=float)

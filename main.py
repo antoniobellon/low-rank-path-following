@@ -24,7 +24,7 @@ res_tol = 1e-4
 predcorr = pc._PredictorCorrector(n=n, m=m, rank=rank, params=params, ini_stepsize=ini_stepsize, res_tol=res_tol) 
 predcorr.run(A, b, C, Y_0, lam_0, STEPSIZE_TUNING=False, PRINT_DATA=False)
  
-ipm_track = it._IPM_tracker(n=n, m=m, rank=rank, params=params, ini_stepsize = ini_stepsize)
+ipm_track = it._IPM_tracker(n=n, m=m, params=params, ini_stepsize = ini_stepsize)
 ipm_track.run(A, b, C, PRINT_DATA=False)
 
 print("Average LR runtime", predcorr._LR_runtime) 

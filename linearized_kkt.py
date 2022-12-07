@@ -43,5 +43,4 @@ class _LinearizedKKTsystem:
         for i in range(self._m):
             self._LinearizedKKTrhs[self._nvars+i]=np.tensordot(A[i],X) - b[i]
         
-        return self._LinearizedKKTrhs
-        
+        return self._LinearizedKKTrhs    

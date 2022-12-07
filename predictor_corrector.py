@@ -32,6 +32,7 @@ class _PredictorCorrector:
         self._final_time = float(params["problem"]["final_time"])
         self._initial_time = float(params["problem"]["initial_time"]) 
         self._ini_stepsize = ini_stepsize
+        self.times = []
 
         # Storing algorithm parameters for stepsize tuning 
         self._gamma1 = float(params["problem"]["gamma1"])
@@ -60,6 +61,7 @@ class _PredictorCorrector:
         np.copyto(self._Y, Y_0)
         np.copyto(self._X,np.matmul(Y_0,Y_0.T))
         np.copyto(self._lam, lam_0)  
+        self.times.append(curr_time)
         
         # Store initial solution in the solutions array
         self._primal_solutions_list.append(np.array(self._X))
@@ -89,23 +91,21 @@ class _PredictorCorrector:
             if not PRINT_DATA and iteration%10==0: print("\nITERATION", iteration) 
 
             if PRINT_DATA: 
+
                 print("\nITERATION", iteration) 
                 print("running time t", time.time() - start_time) 
                 print("TIME", curr_time) 
                 print("TARGET TIME", next_time) 
                 print("TIME STEP", dt) 
+                print("res VS res_tol:", res, self._res_tol )   
             
-                if STEPSIZE_TUNING:
-                    print("res VS res_tol:", res, self._res_tol )   
-            
-            # According to STEPSIZE_TUNING:
-            # either reduce dt by a factor_gamma1 if the residual threshold is violated ...
+            # According to STEPSIZE_TUNING: either reduce dt by a factor_gamma1 if the residual threshold is violated ...
             if STEPSIZE_TUNING and max(res)>self._res_tol: 
 
-                    dt *= self._gamma1
-                    next_time = curr_time + dt  
-                    print("reducing stepsize...")
-                    print("res VS res_tol:", res, self._res_tol )    
+                dt *= self._gamma1
+                next_time = curr_time + dt  
+                print("reducing stepsize...")
+                print("res VS res_tol:", res, self._res_tol )    
                     
             # ... or keep a constant stepsize
             else:
@@ -116,6 +116,7 @@ class _PredictorCorrector:
                 np.copyto(self._X,np.matmul(self._Y,self._Y.T))  
                 self._primal_solutions_list.append(np.array(self._X))
                 curr_time += dt
+                self.times.append(curr_time)
                 iteration += 1 
                 
                 # STEPSIZE_TUNING also indicates whether to optimistically tune the stepsize by a factor_gamma2 or not 

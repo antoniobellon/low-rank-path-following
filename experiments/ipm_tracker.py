@@ -6,17 +6,16 @@ import time
 
 class _IPM_tracker:
 
-    def __init__(self, n: int, m: int, rank: int, params: dict, ini_stepsize: float):
+    def __init__(self, n: int, m: int, initial_time: float, final_time: float, ini_stepsize: float):
         """ Constructor pre-allocates and pre-computes persistent
             data structures. """ 
 
          # Storing algorithm parameters 
         self._m = m
-        self._n = n
-        self._rank = rank
+        self._n = n 
 
-        self._final_time = float(params["problem"]["final_time"])
-        self._initial_time = float(params["problem"]["initial_time"]) 
+        self._initial_time = initial_time
+        self._final_time = final_time
         self._ini_stepsize = ini_stepsize
 
         self._primal_solutions_list = []
@@ -40,7 +39,7 @@ class _IPM_tracker:
 
         iteration = 0
         
-        n, m, rank = self._n, self._m, self._rank
+        n, m = self._n, self._m 
         dt = self._ini_stepsize    
         next_time = self._initial_time + dt
         curr_time  = self._initial_time 
@@ -52,35 +51,38 @@ class _IPM_tracker:
            
         while curr_time < self._final_time:   
 
-            #HIGHEST ACCURACY SOLUTION
-            run_time_SDP_0, actual_X_0, actual_lam_0 = mis._get_SDP_solution(n, m, A(next_time), b(next_time), C(next_time), TOLERANCE=1.0e-14)
-            self._primal_solutions_list.append(actual_X_0)
+            try:
 
-            SDP_res_0 = residual.SDP_resid(n=n, m=m, rank=rank, A=A(next_time), b=b(next_time),  C=C(next_time), 
-                                        X=actual_X_0, lam=actual_lam_0)
-            self._SDP_highest_acc_res_list.append(max(SDP_res_0))  
-           
-            self._SDP_highest_acc_runtime += run_time_SDP_0
-            exact_norm = np.linalg.norm(actual_X_0, 'fro') 
+                #HIGHEST ACCURACY SOLUTION
+                run_time_SDP_0, actual_X_0, actual_lam_0 = mis._get_SDP_solution(n, m, A(next_time), b(next_time), C(next_time), TOLERANCE=1.0e-16)
+                self._primal_solutions_list.append(actual_X_0)
 
-            # HIGH ACCURACY SOLUTION
-            run_time_SDP_1, actual_X_1, actual_lam_1 = mis._get_SDP_solution(n, m, A(next_time), b(next_time), C(next_time), TOLERANCE=1.0e-10)
-            SDP_res_1 = residual.SDP_resid(n=n, m=m, rank=rank, A=A(next_time), b=b(next_time),  C=C(next_time), 
-                                        X=actual_X_1, lam=actual_lam_1)
+                SDP_res_0 = residual.SDP_resid(n=n, m=m, A=A(next_time), b=b(next_time),  C=C(next_time), 
+                                            X=actual_X_0, lam=actual_lam_0)
+                self._SDP_highest_acc_res_list.append(max(SDP_res_0))  
+            
+                self._SDP_highest_acc_runtime += run_time_SDP_0
+                exact_norm = np.linalg.norm(actual_X_0, 'fro') 
 
-            self._SDP_high_acc_runtime += run_time_SDP_1
-            self._SDP_high_acc_res_list.append(max(SDP_res_1))  
-            self._SDP_high_acc_exact_diff.append(np.linalg.norm(actual_X_1-actual_X_0, 'fro')/exact_norm)   
+                # HIGH ACCURACY SOLUTION
+                run_time_SDP_1, actual_X_1, actual_lam_1 = mis._get_SDP_solution(n, m, A(next_time), b(next_time), C(next_time), TOLERANCE=1.0e-10)
+                SDP_res_1 = residual.SDP_resid(n=n, m=m, A=A(next_time), b=b(next_time),  C=C(next_time), 
+                                            X=actual_X_1, lam=actual_lam_1)
 
-            # LOWER ACCURACY SOLUTION
-            run_time_SDP_2, actual_X_2, actual_lam_2 = mis._get_SDP_solution(n, m, A(next_time), b(next_time), C(next_time), TOLERANCE=1.0e-3)
-            SDP_res_2 = residual.SDP_resid(n=n, m=m, rank=rank, A=A(next_time), b=b(next_time),  C=C(next_time), 
-                                        X=actual_X_2, lam=actual_lam_2)
+                self._SDP_high_acc_runtime += run_time_SDP_1
+                self._SDP_high_acc_res_list.append(max(SDP_res_1))  
+                self._SDP_high_acc_exact_diff.append(np.linalg.norm(actual_X_1-actual_X_0, 'fro')/exact_norm)   
 
-            self._SDP_low_acc_res_list.append(max(SDP_res_2))
-            self._SDP_low_acc_runtime += run_time_SDP_2
-            self._SDP_low_acc_exact_diff.append(np.linalg.norm(actual_X_2-actual_X_0, 'fro')/exact_norm)   
+                # LOWER ACCURACY SOLUTION
+                run_time_SDP_2, actual_X_2, actual_lam_2 = mis._get_SDP_solution(n, m, A(next_time), b(next_time), C(next_time), TOLERANCE=1.0e-3)
+                SDP_res_2 = residual.SDP_resid(n=n, m=m, A=A(next_time), b=b(next_time),  C=C(next_time), 
+                                            X=actual_X_2, lam=actual_lam_2)
 
+                self._SDP_low_acc_res_list.append(max(SDP_res_2))
+                self._SDP_low_acc_runtime += run_time_SDP_2
+                self._SDP_low_acc_exact_diff.append(np.linalg.norm(actual_X_2-actual_X_0, 'fro')/exact_norm)   
+            except: 
+                self._primal_solutions_list.append(np.zeros((n,n))) 
             curr_time += dt
             next_time = curr_time+dt 
 

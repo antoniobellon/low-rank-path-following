@@ -25,7 +25,7 @@ def resid(n: int, m:int, rank:int, A: np.ndarray, b: np.ndarray, C: np.ndarray, 
 
     return res
 
-def SDP_resid(n: int, m:int, rank:int, A: np.ndarray, b: np.ndarray, C: np.ndarray, X: np.ndarray,
+def SDP_resid(n: int, m:int, A: np.ndarray, b: np.ndarray, C: np.ndarray, X: np.ndarray,
                  lam: np.ndarray) -> float:
     """
     Computes the residual.

@@ -123,5 +123,4 @@ class _PredictorCorrector:
                     dt = min(final_time  - curr_time, gamma_2 * dt)
                 else:
                     dt = min(final_time  - curr_time, dt)
-
                 next_time = curr_time+dt 

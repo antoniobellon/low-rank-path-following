@@ -1,5 +1,5 @@
 import numpy as np   
-import create_examples_data  as ex 
+import create_problem_data  as ex 
 import predictor_corrector as pc 
 import mosek_ipm_solver as ip  
  
@@ -26,5 +26,5 @@ predcorr.run(A, b, C, Y_0, lam_0,
              STEPSIZE_TUNING  = True,
              PRINT_DATA       = True)  
 
-print("Average runtime", predcorr._LR_runtime) 
+print("Average runtime ", predcorr._LR_runtime) 
 print("Average residual", np.mean(predcorr._LR_residuals))  

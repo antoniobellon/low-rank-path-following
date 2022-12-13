@@ -1,60 +1,59 @@
 import numpy as np 
 import scipy 
-import time  
-import warnings 
+import time   
 import residual
 import linearized_kkt as lk 
-      
-warnings.filterwarnings("ignore")
 
 class _PredictorCorrector:
 
-    def __init__(self, n: int, m: int, rank: int, params: dict, ini_stepsize: float, res_tol: float):
+    def __init__(self, n: int, m: int, rank: int):
 
         """ Constructor pre-allocates and pre-computes persistent
             data structures. """ 
 
         # Storing problem dimensions
-        self._n = n
-        self._m = m
+        self._n    = n
+        self._m    = m
         self._rank = rank
 
         # Create all necessary modules and pre-allocate the workspace 
         self._LinearizedKKTsystem = lk._LinearizedKKTsystem(n=n, m=m, rank=rank)
-        self._linear_KKT_sol = np.zeros((int(n*rank+m+0.5*rank*(rank-1)),))
-        self._candidate_Y = np.zeros((n, rank)) 
-        self._candidate_lam = np.zeros((m, )) 
-        self._Y = np.zeros((n, rank)) 
-        self._X = np.zeros((n, n))
-        self._lam = np.zeros((m,))   
-
-        # Storing algorithm parameters 
-        self._final_time = float(params["problem"]["final_time"])
-        self._initial_time = float(params["problem"]["initial_time"]) 
-        self._ini_stepsize = ini_stepsize
-        self.times = []
-
-        # Storing algorithm parameters for stepsize tuning 
-        self._gamma1 = float(params["problem"]["gamma1"])
-        self._gamma2 = float(params["problem"]["gamma2"])
-        self._res_tol = res_tol
-       
+        self._linear_KKT_sol      = np.zeros((int(n*rank+m+0.5*rank*(rank-1)),))
+        self._candidate_Y         = np.zeros((n, rank)) 
+        self._candidate_lam       = np.zeros((m, )) 
+        self._Y                   = np.zeros((n, rank)) 
+        self._X                   = np.zeros((n, n))
+        self._lam                 = np.zeros((m,))   
+ 
         # Initializing variables for storing solution, residuals and runtime
         self._primal_solutions_list = [] 
-        self._LR_residuals = []
-        self._LR_runtime = 0.0
+        self._LR_residuals          = []
+        self.times                  = []
+        self._LR_runtime            = 0.0
        
-    def run(self, A: np.ndarray, b: np.ndarray, C: np.ndarray, Y_0: np.ndarray, lam_0: np.ndarray, 
-            STEPSIZE_TUNING: bool, PRINT_DATA: bool): 
+    def run(self, 
+            A:                np.ndarray, 
+            b:                np.ndarray, 
+            C:                np.ndarray, 
+            Y_0:              np.ndarray, 
+            lam_0:            np.ndarray, 
+            initial_time:     float,
+            final_time:       float,
+            initial_stepsize: float,
+            gamma_1:          float,
+            gamma_2:          float,
+            res_tol:          float,
+            STEPSIZE_TUNING:  bool, 
+            PRINT_DATA:       bool):  
 
         """ The actual algorithm is executed. """ 
  
         iteration = 0 
          
         # Get copies of all problem parameters  
-        dt = self._ini_stepsize   
-        curr_time = self._initial_time
-        next_time = self._initial_time + dt
+        dt         = initial_stepsize 
+        curr_time  = initial_time
+        next_time  = initial_time + dt
         n, m, rank = self._n, self._m, self._rank
 
         # Store initial solution as the current iterate
@@ -66,11 +65,11 @@ class _PredictorCorrector:
         # Store initial solution in the solutions array
         self._primal_solutions_list.append(np.array(self._X))
 
-        while curr_time < self._final_time:   
+        while curr_time < final_time:   
  
             # Compute linearized KKT system
-            H = self._LinearizedKKTsystem.computeMatrix(A= A(next_time), C=C(next_time), Y=self._Y, lam=self._lam) 
-            k = self._LinearizedKKTsystem.computeRhs(A=A(next_time), b=b(next_time), C=C(next_time), Y=self._Y, X=self._X)   
+            H = self._LinearizedKKTsystem.computeMatrix(A=A(next_time), C=C(next_time), Y=self._Y, lam=self._lam) 
+            k = self._LinearizedKKTsystem.computeRhside(A=A(next_time), b=b(next_time), C=C(next_time), Y=self._Y, X=self._X)   
 
             # Solve the system and store the candidate solution step, recording the execution time
             start_time = time.time() 
@@ -97,15 +96,15 @@ class _PredictorCorrector:
                 print("TIME", curr_time) 
                 print("TARGET TIME", next_time) 
                 print("TIME STEP", dt) 
-                print("res VS res_tol:", res, self._res_tol )   
+                print("res VS res_tol:", res, res_tol )   
             
             # According to STEPSIZE_TUNING: either reduce dt by a factor_gamma1 if the residual threshold is violated ...
-            if STEPSIZE_TUNING and max(res)>self._res_tol: 
+            if STEPSIZE_TUNING and max(res)>res_tol: 
 
-                dt *= self._gamma1
+                dt *= gamma_1
                 next_time = curr_time + dt  
                 print("reducing stepsize...")
-                print("res VS res_tol:", res, self._res_tol )    
+                print("res VS res_tol:", res, res_tol )    
                     
             # ... or keep a constant stepsize
             else:
@@ -121,8 +120,8 @@ class _PredictorCorrector:
                 
                 # STEPSIZE_TUNING also indicates whether to optimistically tune the stepsize by a factor_gamma2 or not 
                 if STEPSIZE_TUNING:
-                    dt = min(self._final_time  - curr_time, self._gamma2 * dt)
+                    dt = min(final_time  - curr_time, gamma_2 * dt)
                 else:
-                    dt = min(self._final_time  - curr_time, dt)
+                    dt = min(final_time  - curr_time, dt)
 
                 next_time = curr_time+dt 

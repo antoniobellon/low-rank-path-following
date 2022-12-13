@@ -69,16 +69,7 @@ def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.
             task.putobjsense(mosek.objsense.minimize)
             
             task.putdouparam(mosek.dparam.intpnt_co_tol_rel_gap, TOLERANCE)
-
-            # intpnt_co_tol_rel_gap
-
-            # Relative gap termination tolerance used by the interior-point optimizer for conic problems.
-
-
-            # intpnt_co_tol_mu_red
-            # Relative complementarity gap tolerance used by the interior-point optimizer for conic problems.
-
-
+            
             # Solve the problem and print summary
             task.optimize()
             task.solutionsummary(mosek.streamtype.msg)

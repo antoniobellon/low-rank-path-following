@@ -4,15 +4,15 @@ class _LinearizedKKTsystem:
 
     def __init__(self, n: int, m: int, rank: int) -> None:
 
-        self._n = n
-        self._m = m
-        self._rank = rank
-        self._nvars = n * rank 
-        self._rantisymm = int((rank-1)*rank/2)  
+        self._n                    = n
+        self._m                    = m
+        self._rank                 = rank
+        self._nvars                = n * rank 
+        self._rantisymm            = int((rank-1)*rank/2)  
         self._gradientGconstraints = np.full((self._nvars,m), fill_value=0.0)
         self._gradientHconstraints = np.full((self._nvars, self._rantisymm), fill_value=0.0)
-        self._LinearizedKKTmatrix = np.full((self._nvars+m+ self._rantisymm,self._nvars+m+ self._rantisymm), fill_value=0.0)
-        self._LinearizedKKTrhs = np.full((self._nvars+m+ self._rantisymm), fill_value=0.0)
+        self._LinearizedKKTmatrix  = np.full((self._nvars+m+ self._rantisymm,self._nvars+m+ self._rantisymm), fill_value=0.0)
+        self._LinearizedKKTrhs     = np.full((self._nvars+m+ self._rantisymm), fill_value=0.0)
 
     def computeMatrix(self, A: np.ndarray, C: np.ndarray, Y: np.ndarray, lam: np.ndarray) -> np.ndarray:
          
@@ -37,7 +37,7 @@ class _LinearizedKKTsystem:
          
         return self._LinearizedKKTmatrix
 
-    def computeRhs(self,  A: np.ndarray, b: np.ndarray, C: np.ndarray, Y: np.ndarray, X: np.ndarray) -> np.ndarray:
+    def computeRhside(self,  A: np.ndarray, b: np.ndarray, C: np.ndarray, Y: np.ndarray, X: np.ndarray) -> np.ndarray:
 
         np.copyto(self._LinearizedKKTrhs[:self._nvars],-2*(np.matmul(C,Y).T).ravel())
         for i in range(self._m):

@@ -4,7 +4,6 @@ import mosek
 import time
 import sys
 
-
 # Define a stream printer to grab output from MOSEK
 def _streamprinter(text):
     sys.stdout.write(text)
@@ -37,7 +36,7 @@ def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.
             
             # Trace objective
             barci, barcj, barcval = C_sparse[0][0], C_sparse[1][0], C_sparse[2][0] 
-
+            print(barci, barcj, barcval)
             # Constraints RHS
             blc = b
             buc = blc
@@ -119,7 +118,7 @@ def _get_initial_point(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np
     
     run_time, X, lam0 = _get_SDP_solution(n=n, m=m, A=A, b=b, C=C, TOLERANCE=TOLERANCE)
     rank = np.linalg.matrix_rank(X, 1.e-8)
-   
+    
     # The eigenvalues in descending order
     eig_dec = np.linalg.eigh(X)
     eig_vals_X = np.flip(eig_dec[0]) 

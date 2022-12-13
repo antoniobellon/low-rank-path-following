@@ -85,9 +85,6 @@ class _ProblemCreator:
         C_init = np.abs(rand_C_init - rand_C_init.T) 
         C_pert = np.abs(rand_C_pert - rand_C_pert.T)   
 
-        np.copyto(self._C_init, C_init) 
-        np.copyto(self._C_pert, C_pert) 
-
         def A(time: np.float): 
             return A_init
         

@@ -25,7 +25,7 @@ _USER_PARAMETERS = {
         "initial_time": 0,
 
         # Final time
-        "final_time": 600, 
+        "final_time": 1, 
     }, 
 }
 

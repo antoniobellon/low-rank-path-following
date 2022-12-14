@@ -32,19 +32,19 @@ class _PredictorCorrector:
         self._LR_runtime            = 0.0
        
     def run(self, 
-            A:                np.ndarray, 
-            b:                np.ndarray, 
-            C:                np.ndarray, 
-            Y_0:              np.ndarray, 
-            lam_0:            np.ndarray, 
-            initial_time:     float,
-            final_time:       float,
-            initial_stepsize: float,
-            gamma_1:          float,
-            gamma_2:          float,
-            res_tol:          float,
-            STEPSIZE_TUNING:  bool, 
-            PRINT_DATA:       bool):  
+            A:                  np.ndarray, 
+            b:                  np.ndarray, 
+            C:                  np.ndarray, 
+            Y_0:                np.ndarray, 
+            lam_0:              np.ndarray, 
+            initial_time:       float,
+            final_time:         float,
+            initial_stepsize:   float,
+            gamma_1:            float,
+            gamma_2:            float,
+            residual_tolerance: float,
+            STEPSIZE_TUNING:    bool, 
+            PRINT_DATA:         bool):  
 
         """ The actual algorithm is executed. """ 
  
@@ -96,15 +96,15 @@ class _PredictorCorrector:
                 print("TIME", curr_time) 
                 print("TARGET TIME", next_time) 
                 print("TIME STEP", dt) 
-                print("res VS res_tol:", res, res_tol )   
+                print("res VS residual_tolerance:", res, residual_tolerance )   
             
             # According to STEPSIZE_TUNING: either reduce dt by a factor_gamma1 if the residual threshold is violated ...
-            if STEPSIZE_TUNING and max(res)>res_tol: 
+            if STEPSIZE_TUNING and max(res)>residual_tolerance: 
 
                 dt *= gamma_1
                 next_time = curr_time + dt  
                 print("reducing stepsize...")
-                print("res VS res_tol:", res, res_tol )    
+                print("res VS residual_tolerance:", res, residual_tolerance )    
                     
             # ... or keep a constant stepsize
             else:

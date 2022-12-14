@@ -3,27 +3,9 @@ import scipy as sc
 import mosek
 import time
 import sys
-
-# Define a stream printer to grab output from MOSEK
-def _streamprinter(text):
-    sys.stdout.write(text)
-    sys.stdout.flush()
-
-def _sparsify(m: np.int, A: np.ndarray):
-        A_sparse = [list]*3
-        for h in range(3): 
-            sparse_datas = []
-            for k in range(m):
-                sparse_data = sc.sparse.find(sc.sparse.tril(A[k]))[h].tolist()
-                sparse_datas.append(sparse_data)
-            A_sparse[h] = sparse_datas  
-        return A_sparse
-
-def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.ndarray, TOLERANCE: float):
-
-    A_sparse = _sparsify(m, A)
-    C_sparse = _sparsify(1,[C])
-     
+ 
+def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.ndarray, rel_gap_termination_tolerance: float):
+ 
     start_time = time.time() 
     # Make mosek environment
     
@@ -31,12 +13,12 @@ def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.
 
         # Create a task object and attach log stream printer
         with env.Task(0, 0) as task:
-
-            # task.set_Stream(mosek.streamtype.log, _streamprinter)
-            
+ 
             # Trace objective
-            barci, barcj, barcval = C_sparse[0][0], C_sparse[1][0], C_sparse[2][0] 
-            print(barci, barcj, barcval)
+            barci   = sc.sparse.find(sc.sparse.tril(C))[0].tolist()
+            barcj   = sc.sparse.find(sc.sparse.tril(C))[1].tolist()
+            barcval = sc.sparse.find(sc.sparse.tril(C))[2].tolist()
+            
             # Constraints RHS
             blc = b
             buc = blc
@@ -44,11 +26,10 @@ def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.
             # Constraints LHS
             barai, baraj, baraval = [], [], [] 
             
-            for k in range(m):
-                #  @ts-ignore
-                barai.append(A_sparse[0][k])
-                baraj.append(A_sparse[1][k])
-                baraval.append(A_sparse[2][k]) 
+            for k in range(m): 
+                barai.append(  sc.sparse.find(sc.sparse.tril(A[k]))[0].tolist())
+                baraj.append(  sc.sparse.find(sc.sparse.tril(A[k]))[1].tolist())
+                baraval.append(sc.sparse.find(sc.sparse.tril(A[k]))[2].tolist())
             
             # Append  empty constraints and matrix variables 
             task.appendcons(m) 
@@ -68,8 +49,8 @@ def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.
             # Input the objective sense (minimize/maximize)
             task.putobjsense(mosek.objsense.minimize)
             
-            task.putdouparam(mosek.dparam.intpnt_co_tol_rel_gap, TOLERANCE)
-            
+            task.putdouparam(mosek.dparam.intpnt_co_tol_rel_gap, rel_gap_termination_tolerance)
+
             # Solve the problem and print summary
             task.optimize()
             task.solutionsummary(mosek.streamtype.msg)
@@ -105,9 +86,9 @@ def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.
             else:
                 print("Other solution status")
 
-def _get_initial_point(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.ndarray, TOLERANCE: float):
+def _get_initial_point(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.ndarray, rel_gap_termination_tolerance: float):
     
-    run_time, X, lam0 = _get_SDP_solution(n=n, m=m, A=A, b=b, C=C, TOLERANCE=TOLERANCE)
+    run_time, X, lam0 = _get_SDP_solution(n=n, m=m, A=A, b=b, C=C, rel_gap_termination_tolerance=rel_gap_termination_tolerance)
     rank = np.linalg.matrix_rank(X, 1.e-8)
     
     # The eigenvalues in descending order

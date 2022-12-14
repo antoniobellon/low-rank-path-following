@@ -1,8 +1,7 @@
 import numpy as np  
 import scipy as sc
 import mosek
-import time
-import sys
+import time 
  
 def _get_SDP_solution(n: np.int, m: np.int, A: np.ndarray, b: np.ndarray, C: np.ndarray, rel_gap_termination_tolerance: float):
  

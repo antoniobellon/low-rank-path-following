@@ -1,6 +1,6 @@
 import numpy as np   
 import create_problem_data  as ex 
-import predictor_corrector as pc 
+import path_following as pf 
 import mosek_ipm_solver as ip  
 
 problem = ex._ProblemCreator()
@@ -15,7 +15,7 @@ res_tol          = 1e-4
 
 Y_0, rank, lam_0  = ip._get_initial_point(n=n, m=m, A = A(initial_time), b=b(initial_time), C=C(initial_time), rel_gap_termination_tolerance=1.0e-10)
 
-predcorr = pc._PredictorCorrector(n=n, m=m, rank=rank) 
+predcorr = pf._PathFollowing(n=n, m=m, rank=rank) 
 predcorr.run(A, b, C, Y_0, lam_0, 
              initial_time       = initial_time,
              final_time         = final_time,

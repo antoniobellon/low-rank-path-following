@@ -3,9 +3,8 @@ import time
 import pickle
 
 import create_examples_data  as ex
-import predictor_corrector as pc  
-import experiments.ipm_tracker as it
-import parameters as par  
+import path_following as pf  
+import experiments.ipm_tracker as it 
 import mosek_ipm_solver as ss 
 
 params = par.getParameters(print_par=True) 
@@ -98,8 +97,8 @@ def run_experiment(PROBLEM_SIZE, SAMPLE_SIZE):
             print("    subdivision =", sub)
 
             # Solve TV-SDP using Low Rank Path-Following
-            predcorr = pc._PredictorCorrector(n=n, m=m, rank=rank, params=params, ini_stepsize = 1/sub, res_tol=1e-4) 
-            predcorr.run(A, b, C, Y_0, lam_0, STEPSIZE_TUNING=False, PRINT_DATA=False) 
+            pathfoll = pf._PathFollowing(n=n, m=m, rank=rank) 
+            pathfoll.run(A, b, C, Y_0, lam_0, STEPSIZE_TUNING=False, PRINT_DATA=False) 
 
             pickled_exp['exp_dict']['LR_res'][str(sub)].append(np.mean(predcorr._LR_residuals))
             pickled_exp['exp_dict']['LR_run'][str(sub)].append(np.mean(predcorr._LR_runtime))

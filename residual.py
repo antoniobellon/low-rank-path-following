@@ -1,4 +1,3 @@
-import predictor_corrector as pc 
 import numpy as np 
 
 def resid(n: int, m:int, rank:int, A: np.ndarray, b: np.ndarray, C: np.ndarray, Y: np.ndarray, lam: np.ndarray):
